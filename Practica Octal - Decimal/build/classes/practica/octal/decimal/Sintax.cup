@@ -1,0 +1,55 @@
+package practica.octal.decimal;
+
+import java_cup.runtime.*;
+
+parser code {:
+
+    public Sintax(Lexico lexer) { 
+        super(lexer);   
+    }
+
+    @Override
+    public void syntax_error(Symbol s){
+        if(s.right != -1){
+            try {
+                System.out.println(
+                (("Error Sintaxis Linea #: " + (s.right + 1) 
+                + " Columna # " + (s.left + 1) 
+                + " Token NO Reconocido: -> " + (s.value) + "\n" )));
+            } catch (Exception e) {
+                System.out.println("Error " + e.toString());
+            }
+        }
+        
+    }
+:}
+    
+
+/* Terminales */
+
+terminal    Octal;
+
+/* No Terminales */
+
+non terminal    inicio;
+non terminal    octal, octals;
+
+/* Gramaticas */
+
+start with inicio;
+
+inicio ::= 
+    octals:e {:System.out.println("El resultado de la conversion es: " + ((Numero) e).getNumero());:}
+;
+
+octals ::= 
+    octal:a octals:e
+    {:
+        RESULT = new Numero(((Numero) e).getBase() + 1, ((Numero) a).getNumero()*(((int) Math.pow(8, ((Numero) e).getBase() + 1))) + ((Numero) e).getNumero());
+    :}
+    | octal:e {:RESULT = e;:}
+;
+
+octal ::=
+    Octal:e {:RESULT = new Numero(0, Integer.parseInt(e.toString()));:}
+;
